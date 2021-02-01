@@ -45,7 +45,7 @@ function Home() {
           <QuestionCard>
             <header>
               <img src={imgProfile} />
-              <strong>por ciclano da Silva</strong>
+              <strong>por Ciclano da Silva</strong>
               <p>em 12/12/2012 as 12:12</p>
             </header>
             <section>
@@ -53,7 +53,24 @@ function Home() {
               <p>Descrição</p>
               <img src="https://media.bitdegree.org/storage/media/images/2018/10/The-Most-Essential-React-Interview-Questions.jpg" />
             </section>
-            <footer></footer>
+            <footer>
+              <h1>11 Respostas</h1>
+              <section>
+                <header>
+                  <img src={imgProfile} />
+                  <strong>por Fulano</strong>
+                  <p>12/12/2012 as 12:12</p>
+                </header>
+                <p>Resposta para a pergunta.</p>
+              </section>
+              <form>
+                <textarea
+                  placeholder="Responda essa dúvida!"
+                  required
+                ></textarea>
+                <button>Enviar</button>
+              </form>
+            </footer>
           </QuestionCard>
         </FeedContainer>
         <ActionsContainer>

@@ -95,4 +95,39 @@ export const QuestionCard = styled.article`
       align-self: center;
     }
   }
+
+  > footer {
+    margin-top: 10px;
+    > h1 {
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      :hover {
+        color: var(--primary);
+      }
+    }
+    > section {
+      margin-top: 10px;
+      border-radius: 4px;
+      padding: 5px;
+      background-color: var(--dark);
+
+      > header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        > img {
+          width: 30px;
+          height: 30px;
+          border-radius: 15px;
+        }
+      }
+      > p {
+        margin-top: 5px;
+        width: 100%;
+        padding: 10px 5px;
+        border-left: 2px solid var(--primary);
+      }
+    }
+  }
 `;
