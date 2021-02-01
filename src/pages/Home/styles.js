@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { FaSignOutAlt } from "react-icons/fa";
 
 export const Container = styled.div`
   width: 100vw;
@@ -15,6 +16,8 @@ export const Header = styled.header`
   height: 60px;
   display: flex;
   align-items: center;
+  display: flex;
+  justify-content: space-between;
 
   background-color: var(--primary);
   border-bottom: 1px solid var(--darkGray);
@@ -49,13 +52,17 @@ export const FeedContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
 
-  padding-top: 10px;
+  overflow-y: auto;
+
+  padding: 10px 0px;
 `;
 export const ActionsContainer = styled.div`
   margin-top: 10px;
-`;
 
+  text-align: center;
+`;
 export const QuestionCard = styled.article`
   width: 80%;
   margin-top: 10px;
@@ -129,5 +136,47 @@ export const QuestionCard = styled.article`
         border-left: 2px solid var(--primary);
       }
     }
+    > form {
+      width: 100%;
+      margin-top: 5px;
+
+      display: flex;
+
+      gap: 5px;
+
+      > textarea {
+        flex: 1;
+      }
+    }
+  }
+`;
+export const Logo = styled.img`
+  width: 60px;
+  height: 60px;
+
+  margin: 20px;
+  margin-top: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--dark);
+
+  box-shadow: 0px 0px 5px var(--dark);
+  cursor: pointer;
+  transition: 0.2s;
+
+  :hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 15px var(--dark);
+  }
+`;
+
+export const IconSignOut = styled(FaSignOutAlt)`
+  font-size: 30px;
+  margin-right: 10px;
+  transition: 0.3;
+
+  cursor: pointer;
+
+  :hover {
+    color: var(--dark);
   }
 `;
