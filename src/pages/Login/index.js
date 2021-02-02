@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import Input from "../../components/input";
 
 import { api } from "../../services/api";
+import { signIn } from "../../services/security";
 import { Body, Button, Container, FormLogin, Header } from "./styles";
 
 function Login() {
@@ -19,7 +20,7 @@ function Login() {
     try {
       const response = await api.post("/sessions", login);
 
-      console.log(response.data);
+      signIn(response.data);
 
       //Implementar a autorização
 
