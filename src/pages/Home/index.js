@@ -11,12 +11,13 @@ import {
   Logo,
   ProfileContainer,
   QuestionCard,
+  AnswersCard,
 } from "./styles";
 
 import imgProfile from "../../assets/foto_perfil.png";
 import logo from "../../assets/logo.png";
 import { api } from "../../services/api";
-import { signOut } from "../../services/security";
+import { getUser, signOut } from "../../services/security";
 
 function Profile() {
   return (
@@ -42,6 +43,61 @@ function Profile() {
 }
 
 function Question({ question }) {
+  const [newAnswer, setNewAnswer] = useState("");
+  const [showAnswers, setShowAnswers] = useState(false);
+
+  const [answers, setAnswers] = useState(question.Answers);
+  // const handleInput = (e) => {
+  //   setAnswer(e.target.value);
+  // };
+
+  const handleAddAnswer = async (e) => {
+    e.preventDefault();
+
+    if (newAnswer < 10)
+      return alert("A resposta precisa ter no mínimo 10 caracteres");
+
+    try {
+      const response = await api.post(`/questions/${question.id}/answers`, {
+        description: newAnswer,
+      });
+
+      const aluno = getUser();
+
+      const answerAdded = {
+        id: response.data.id,
+        description: newAnswer,
+        created_at: response.data.createdAt,
+        Student: {
+          id: aluno.studentId,
+          name: aluno.name,
+        },
+      };
+
+      setAnswers([...answers, answerAdded]);
+
+      setNewAnswer("");
+      // console.log(response);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  // const showAnswers = () => {
+  //   if (show === true) {
+  //     // const container = question.Answers.map((a) => <Answer answer={a} />);
+  //     // console.log(container);
+
+  //     setShow(false);
+  //   } else {
+  //     setShow(true);
+  //   }
+
+  //   // alert(show);
+  // };
+
+  const qtdAnwers = answers.length;
+
   return (
     <QuestionCard>
       <header>
@@ -55,21 +111,59 @@ function Question({ question }) {
         <img src={question.image} />
       </section>
       <footer>
-        <h1>11 Respostas</h1>
-        <section>
+        <h1 onClick={() => setShowAnswers(!showAnswers)}>
+          {qtdAnwers === 0 ? (
+            "Seja o primeiro a responder"
+          ) : (
+            <>
+              {qtdAnwers}
+              {qtdAnwers > 1 ? " Respostas" : " Resposta"}
+            </>
+          )}
+        </h1>
+        {showAnswers && (
+          <>
+            {answers.map((a) => (
+              <Answer answer={a} />
+            ))}
+
+            {/* <AnswersCard>
           <header>
             <img src={imgProfile} />
             <strong>por </strong>
             <p>12/12/2012 as 12:12</p>
           </header>
           <p>Resposta para a pergunta.</p>
-        </section>
-        <form>
-          <textarea placeholder="Responda essa dúvida!" required></textarea>
-          <button>Enviar</button>
-        </form>
+        </AnswersCard> */}
+
+            <form onSubmit={handleAddAnswer}>
+              <textarea
+                minLength="10"
+                placeholder="Responda essa dúvida!"
+                onChange={(e) => setNewAnswer(e.target.value)}
+                required
+                id="answer"
+                value={newAnswer}
+              ></textarea>
+              <button>Enviar</button>
+            </form>
+          </>
+        )}
       </footer>
     </QuestionCard>
+  );
+}
+
+function Answer({ answer }) {
+  return (
+    <AnswersCard>
+      <header>
+        <img src={imgProfile} />
+        <strong>por {answer.Student.name}</strong>
+        <p>as {answer.created_at}</p>
+      </header>
+      <p>{answer.description}</p>
+    </AnswersCard>
   );
 }
 

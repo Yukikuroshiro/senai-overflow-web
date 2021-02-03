@@ -109,11 +109,12 @@ export const QuestionCard = styled.article`
       font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
+      user-select: none;
       :hover {
         color: var(--primary);
       }
     }
-    > section {
+    /* > section {
       margin-top: 10px;
       border-radius: 4px;
       padding: 5px;
@@ -135,7 +136,7 @@ export const QuestionCard = styled.article`
         padding: 10px 5px;
         border-left: 2px solid var(--primary);
       }
-    }
+    } */
     > form {
       width: 100%;
       margin-top: 5px;
@@ -150,6 +151,31 @@ export const QuestionCard = styled.article`
     }
   }
 `;
+
+export const AnswersCard = styled.section`
+  margin-top: 10px;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: var(--dark);
+
+  > header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    > img {
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+    }
+  }
+  > p {
+    margin-top: 5px;
+    width: 100%;
+    padding: 10px 5px;
+    border-left: 2px solid var(--primary);
+  }
+`;
+
 export const Logo = styled.img`
   width: 60px;
   height: 60px;
