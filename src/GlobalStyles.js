@@ -73,10 +73,12 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
 
-  textarea{
+  textarea, select{
     font-size: 16px;
     padding: 5px;
-    font-weight: bold;
     resize:none;
+    border-radius:4px;
+
+    font-family:sans-serif;
   }
 `;

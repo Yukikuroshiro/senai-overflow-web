@@ -206,3 +206,17 @@ export const IconSignOut = styled(FaSignOutAlt)`
     color: var(--dark);
   }
 `;
+
+export const FormNewQuestion = styled.form`
+  min-width: 300px;
+  width: 450px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+  }
+`;
