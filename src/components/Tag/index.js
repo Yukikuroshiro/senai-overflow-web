@@ -1,10 +1,10 @@
 import { Container } from "./styles";
 
-function Tag({ info }) {
+function Tag({ info, handleClose }) {
   return (
     <Container>
       {info}
-      <span>&times;</span>
+      <span onClick={handleClose}>&times;</span>
     </Container>
   );
 }
