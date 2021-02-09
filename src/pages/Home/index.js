@@ -23,6 +23,7 @@ import Modal from "../../components/Modal";
 import Input from "../../components/input/index";
 import Select from "../../components/Select";
 import Tag from "../../components/Tag";
+import Loading from "../../components/Loading";
 
 function Profile() {
   const student = getUser();
@@ -49,7 +50,7 @@ function Profile() {
   );
 }
 
-function Question({ question }) {
+function Question({ question, setIsLoading }) {
   const [newAnswer, setNewAnswer] = useState("");
   const [showAnswers, setShowAnswers] = useState(false);
 
@@ -66,6 +67,7 @@ function Question({ question }) {
 
   const handleAddAnswer = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (newAnswer < 10)
       return alert("A resposta precisa ter no mínimo 10 caracteres");
@@ -90,9 +92,11 @@ function Question({ question }) {
       setAnswers([...answers, answerAdded]);
 
       setNewAnswer("");
+      setIsLoading(false);
       // console.log(response);
     } catch (error) {
       alert(error);
+      setIsLoading(false);
     }
   };
 
@@ -128,7 +132,11 @@ function Question({ question }) {
       <section>
         <strong>{question.title}</strong>
         <p>{question.description}</p>
-        <img src={question.image} />
+        {question.image ? (
+          <img src={question.image} alt="Imagem da pergunta" />
+        ) : (
+          ""
+        )}
       </section>
       <footer>
         <h1 onClick={() => setShowAnswers(!showAnswers)}>
@@ -194,7 +202,7 @@ function Answer({ answer }) {
   );
 }
 
-function NewQuestion({ handleReload }) {
+function NewQuestion({ handleReload, setIsLoading }) {
   const [newQuestion, setNewQuestion] = useState({
     title: "",
     description: "",
@@ -262,6 +270,7 @@ function NewQuestion({ handleReload }) {
 
   const handleAddNewQuestion = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const data = new FormData();
 
@@ -275,17 +284,19 @@ function NewQuestion({ handleReload }) {
     if (image) data.append("image", image);
     if (newQuestion.gist) data.append("gist", newQuestion.gist);
 
+    setIsLoading(true);
+
     try {
       await api.post("/questions", data, {
         headers: {
           "Content-type": "multipart/form-data",
         },
       });
-
       handleReload();
     } catch (error) {
       alert(error);
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -347,6 +358,8 @@ function NewQuestion({ handleReload }) {
 function Home() {
   const history = useHistory();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [questions, setQuestions] = useState([]);
 
   const [reload, setReload] = useState(null);
@@ -355,13 +368,14 @@ function Home() {
 
   useEffect(() => {
     const loadQuestions = async () => {
+      setIsLoading(true);
       const response = await api.get("/questions/feed");
 
       setQuestions(response.data);
 
       console.log(response);
+      setIsLoading(false);
     };
-
     loadQuestions();
   }, [reload]);
 
@@ -378,12 +392,16 @@ function Home() {
 
   return (
     <>
+      {isLoading && <Loading />}
       {showNewQuestion && (
         <Modal
           title="Faça uma pergunta"
           handleClose={() => setShowNewQuestion(false)}
         >
-          <NewQuestion handleReload={handleReload}></NewQuestion>
+          <NewQuestion
+            handleReload={handleReload}
+            setIsLoading={setIsLoading}
+          ></NewQuestion>
         </Modal>
       )}
       <Container>
@@ -397,7 +415,7 @@ function Home() {
           </ProfileContainer>
           <FeedContainer>
             {questions.map((q) => (
-              <Question question={q} />
+              <Question question={q} setIsLoading={setIsLoading} />
             ))}
           </FeedContainer>
           <ActionsContainer>
