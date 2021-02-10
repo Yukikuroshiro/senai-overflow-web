@@ -43,9 +43,23 @@ export const ProfileContainer = styled.div`
     align-items: center;
     gap: 4px;
   }
+
+  input[type="file"] {
+    display: none;
+  }
   img {
     width: 35%;
     border-radius: 50%;
+  }
+
+  label {
+    cursor: pointer;
+    text-decoration: underline;
+
+    transition: 0.2s;
+    :hover {
+      color: var(--primary);
+    }
   }
 `;
 export const FeedContainer = styled.div`

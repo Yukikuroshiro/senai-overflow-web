@@ -22,6 +22,14 @@ export const getUser = () => {
   return student;
 };
 
+export const setUser = (student) => {
+  const user = JSON.parse(localStorage.getItem(USER_KEY));
+
+  user.student = student;
+
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+};
+
 export const isSignedIn = () => {
   const user = JSON.parse(localStorage.getItem(USER_KEY));
 
