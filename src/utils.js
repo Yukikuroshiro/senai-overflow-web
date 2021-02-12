@@ -13,7 +13,7 @@ export const validSquaredImage = (image) => {
         const width = image.width;
         const height = image.height;
 
-        if (width / height > 1.1) {
+        if (width / height > 1.1 || height / width > 1.1) {
           reject("A imagem não é quadrada");
           return;
         }
