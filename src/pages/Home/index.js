@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import ReactEmbedGist from "react-embed-gist";
 
 import {
@@ -434,12 +434,20 @@ function Home() {
 
   const [searchQuestion, setSearchQuestion] = useState([]);
 
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     const loadQuestions = async () => {
       setIsLoading(true);
-      const response = await api.post("/questions/feed");
+      const response = await api.post("/questions/feed", {
+        limit: 5,
+        offset: (page - 1) * 5,
+      });
+      if (response.data.length === 0) {
+        alert("Acabou as perguntas");
+      }
 
-      setQuestions(response.data);
+      setQuestions([...questions, ...response.data]);
 
       console.log(response);
       setIsLoading(false);
@@ -463,23 +471,32 @@ function Home() {
     setIsLoading(true);
 
     try {
-      const response = await api.post("/questions/feed/search", {searchParams:searchQuestion});
+      const response = await api.post("/questions/feed/search", {
+        searchParams: searchQuestion,
+      });
 
       setQuestions(response.data);
+
       setIsLoading(false);
       setSearchQuestion("");
-      console.log(response);
+      console.log(response.data);
     } catch (error) {
-
-      alert(error)
+      alert(error);
       setIsLoading(false);
     }
-  }
+  };
 
   const handleSearch = (e) => {
-    setSearchQuestion(e.target.value); 
-    
-  }
+    setSearchQuestion(e.target.value);
+  };
+
+  const handleScroll = (e) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.target;
+    if (scrollHeight - scrollTop === clientHeight) {
+      setPage(page + 1);
+      handleReload();
+    }
+  };
 
   return (
     <>
@@ -503,8 +520,14 @@ function Home() {
           <Logo src={logo} onClick={handleReload} />
           <form onSubmit={searchSubmit}>
             <div>
-                <Input id="searchBar" type="text" label="Pesquise algo que te interessa" value={searchQuestion} handler={handleSearch}/>
-                <button>Procurar</button>
+              <Input
+                id="searchBar"
+                type="text"
+                label="Pesquise algo que te interessa"
+                value={searchQuestion}
+                handler={handleSearch}
+              />
+              <button>Procurar</button>
             </div>
           </form>
           <IconSignOut onClick={handleSignOut} />
@@ -513,7 +536,7 @@ function Home() {
           <ProfileContainer>
             <Profile handleReload={handleReload} setIsLoading={setIsLoading} />
           </ProfileContainer>
-          <FeedContainer>
+          <FeedContainer onScroll={handleScroll}>
             {questions.map((q) => (
               <Question
                 question={q}

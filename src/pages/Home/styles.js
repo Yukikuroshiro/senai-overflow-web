@@ -23,14 +23,14 @@ export const Header = styled.header`
   border-bottom: 1px solid var(--darkGray);
   box-shadow: 0px 1px 5px var(--darkGray);
 
-  div{
+  div {
     width: 650px;
     display: flex;
-    justify-content:space-between;
-    align-items: center;
+    justify-content: space-between;
 
-    >input{
+    > input {
       width: 500px;
+      height: 30px;
     }
   }
 `;
