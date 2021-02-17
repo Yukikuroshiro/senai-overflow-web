@@ -29,7 +29,6 @@ import Select from "../../components/Select";
 import Tag from "../../components/Tag";
 import Loading from "../../components/Loading";
 import { validSquaredImage } from "../../utils";
-import { FaGithub } from "react-icons/fa";
 
 function Profile({ setIsLoading, handleReload, setMessage }) {
   const [student, setStudent] = useState(getUser());
@@ -433,10 +432,12 @@ function Home() {
 
   const [currentGist, setCurrentGist] = useState(undefined);
 
+  const [searchQuestion, setSearchQuestion] = useState([]);
+
   useEffect(() => {
     const loadQuestions = async () => {
       setIsLoading(true);
-      const response = await api.get("/questions/feed");
+      const response = await api.post("/questions/feed");
 
       setQuestions(response.data);
 
@@ -456,6 +457,29 @@ function Home() {
     setShowNewQuestion(false);
     setReload(Math.random());
   };
+
+  const searchSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await api.post("/questions/feed/search", {searchParams:searchQuestion});
+
+      setQuestions(response.data);
+      setIsLoading(false);
+      setSearchQuestion("");
+      console.log(response);
+    } catch (error) {
+
+      alert(error)
+      setIsLoading(false);
+    }
+  }
+
+  const handleSearch = (e) => {
+    setSearchQuestion(e.target.value); 
+    
+  }
 
   return (
     <>
@@ -477,6 +501,12 @@ function Home() {
       <Container>
         <Header>
           <Logo src={logo} onClick={handleReload} />
+          <form onSubmit={searchSubmit}>
+            <div>
+                <Input id="searchBar" type="text" label="Pesquise algo que te interessa" value={searchQuestion} handler={handleSearch}/>
+                <button>Procurar</button>
+            </div>
+          </form>
           <IconSignOut onClick={handleSignOut} />
         </Header>
         <Content>

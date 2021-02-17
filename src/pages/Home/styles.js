@@ -22,6 +22,17 @@ export const Header = styled.header`
   background-color: var(--primary);
   border-bottom: 1px solid var(--darkGray);
   box-shadow: 0px 1px 5px var(--darkGray);
+
+  div{
+    width: 650px;
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+
+    >input{
+      width: 500px;
+    }
+  }
 `;
 export const Content = styled.div`
   width: 1280px;
