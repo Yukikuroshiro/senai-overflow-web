@@ -1,4 +1,4 @@
-import { Container } from "./style";
+import { Container } from "./styles";
 
 function Input({ id, label, value, handler, ...rest }) {
   return (

@@ -1,4 +1,4 @@
-import { Spinner } from "./style";
+import { Spinner } from "./styles";
 
 function SpinnerLoading() {
   return <Spinner />;
