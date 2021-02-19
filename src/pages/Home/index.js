@@ -29,6 +29,7 @@ import Select from "../../components/Select";
 import Tag from "../../components/Tag";
 import Loading from "../../components/Loading";
 import { validSquaredImage } from "../../utils";
+import SpinnerLoading from "../../components/SpinnerLoading";
 
 function Profile({ setIsLoading, handleReload, setMessage }) {
   const [student, setStudent] = useState(getUser());
@@ -424,6 +425,8 @@ function Home() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [isLoadingFeed, setIsLoadingFeed] = useState(false);
+
   const [questions, setQuestions] = useState([]);
 
   const [reload, setReload] = useState(null);
@@ -436,22 +439,30 @@ function Home() {
 
   const [page, setPage] = useState(1);
 
+  const [totalQuestions, setTotalQuestions] = useState(0);
+
+  const loadQuestions = async () => {
+    //Se já estiver buscando, não busca de novo
+    if (isLoadingFeed) return;
+
+    //Se tiver chego no fim, não busca de novo
+    if (totalQuestions > 0 && totalQuestions == questions.length) return;
+
+    setIsLoadingFeed(true);
+    const response = await api.get("/feed", {
+      params: { page },
+    });
+
+    setPage(page + 1);
+
+    setQuestions([...questions, ...response.data]);
+
+    setTotalQuestions(response.headers["x-total-count"]);
+
+    setIsLoadingFeed(false);
+  };
+
   useEffect(() => {
-    const loadQuestions = async () => {
-      setIsLoading(true);
-      const response = await api.post("/questions/feed", {
-        limit: 5,
-        offset: (page - 1) * 5,
-      });
-      if (response.data.length === 0) {
-        alert("Acabou as perguntas");
-      }
-
-      setQuestions([...questions, ...response.data]);
-
-      console.log(response);
-      setIsLoading(false);
-    };
     loadQuestions();
   }, [reload]);
 
@@ -463,6 +474,9 @@ function Home() {
 
   const handleReload = () => {
     setShowNewQuestion(false);
+    setIsLoading(false);
+    setPage(1);
+    setQuestions([]);
     setReload(Math.random());
   };
 
@@ -490,12 +504,10 @@ function Home() {
     setSearchQuestion(e.target.value);
   };
 
-  const handleScroll = (e) => {
+  const feedScrollObserver = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;
-    if (scrollHeight - scrollTop === clientHeight) {
-      setPage(page + 1);
-      handleReload();
-    }
+
+    if (scrollTop + clientHeight >= scrollHeight - 100) loadQuestions();
   };
 
   return (
@@ -536,7 +548,7 @@ function Home() {
           <ProfileContainer>
             <Profile handleReload={handleReload} setIsLoading={setIsLoading} />
           </ProfileContainer>
-          <FeedContainer onScroll={handleScroll}>
+          <FeedContainer onScroll={feedScrollObserver}>
             {questions.map((q) => (
               <Question
                 question={q}
@@ -544,6 +556,8 @@ function Home() {
                 setCurrentGist={setCurrentGist}
               />
             ))}
+            {isLoadingFeed && <SpinnerLoading />}
+            {/* <button onClick={loadQuestions}>Ver Mais</button> */}
           </FeedContainer>
           <ActionsContainer>
             <button onClick={() => setShowNewQuestion(true)}>
