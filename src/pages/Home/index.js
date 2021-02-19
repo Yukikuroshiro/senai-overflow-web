@@ -30,6 +30,7 @@ import Tag from "../../components/Tag";
 import Loading from "../../components/Loading";
 import { validSquaredImage } from "../../utils";
 import SpinnerLoading from "../../components/SpinnerLoading";
+import InputSearch from "../../components/InputSearch";
 
 function Profile({ setIsLoading, handleReload, setMessage }) {
   const [student, setStudent] = useState(getUser());
@@ -201,7 +202,7 @@ function Question({ question, setIsLoading, setCurrentGist }) {
         {showAnswers && (
           <>
             {answers.map((a) => (
-              <Answer answer={a} />
+              <Answer key={answers.id} answer={a} />
             ))}
 
             {/* <AnswersCard>
@@ -435,7 +436,7 @@ function Home() {
 
   const [currentGist, setCurrentGist] = useState(undefined);
 
-  const [searchQuestion, setSearchQuestion] = useState([]);
+  const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
 
@@ -477,37 +478,34 @@ function Home() {
     setIsLoading(false);
     setPage(1);
     setQuestions([]);
+    setSearch("");
     setReload(Math.random());
-  };
-
-  const searchSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await api.post("/questions/feed/search", {
-        searchParams: searchQuestion,
-      });
-
-      setQuestions(response.data);
-
-      setIsLoading(false);
-      setSearchQuestion("");
-      console.log(response.data);
-    } catch (error) {
-      alert(error);
-      setIsLoading(false);
-    }
-  };
-
-  const handleSearch = (e) => {
-    setSearchQuestion(e.target.value);
   };
 
   const feedScrollObserver = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;
 
-    if (scrollTop + clientHeight >= scrollHeight - 100) loadQuestions();
+    if (scrollTop + clientHeight >= scrollHeight - 100 && search.length < 4)
+      loadQuestions();
+  };
+
+  const handleSearch = async (e) => {
+    setSearch(e.target.value);
+
+    if (e.target.value.length === 0) setReload(Math.random());
+
+    if (e.target.value.length < 4) return;
+
+    try {
+      const response = await api.get("/questions", {
+        params: { search: e.target.value },
+      });
+
+      setQuestions(response.data);
+    } catch (error) {
+      alert(error);
+      console.error(error);
+    }
   };
 
   return (
@@ -530,18 +528,7 @@ function Home() {
       <Container>
         <Header>
           <Logo src={logo} onClick={handleReload} />
-          <form onSubmit={searchSubmit}>
-            <div>
-              <Input
-                id="searchBar"
-                type="text"
-                label="Pesquise algo que te interessa"
-                value={searchQuestion}
-                handler={handleSearch}
-              />
-              <button>Procurar</button>
-            </div>
-          </form>
+          <InputSearch handler={handleSearch} value={search} />
           <IconSignOut onClick={handleSignOut} />
         </Header>
         <Content>
@@ -549,14 +536,21 @@ function Home() {
             <Profile handleReload={handleReload} setIsLoading={setIsLoading} />
           </ProfileContainer>
           <FeedContainer onScroll={feedScrollObserver}>
+            {questions.length === 0 &&
+              search.length > 3 &&
+              "Nenhuma questão encontrada"}
             {questions.map((q) => (
               <Question
+                key={q.id}
                 question={q}
                 setIsLoading={setIsLoading}
                 setCurrentGist={setCurrentGist}
               />
             ))}
             {isLoadingFeed && <SpinnerLoading />}
+            {totalQuestions > 0 &&
+              totalQuestions == questions.length &&
+              "Isso é tudo"}
             {/* <button onClick={loadQuestions}>Ver Mais</button> */}
           </FeedContainer>
           <ActionsContainer>
